@@ -77,3 +77,7 @@ require_once("header.php");
 
    </fieldset>
 </form>
+
+<?php
+require_once('footer.php');
+?>

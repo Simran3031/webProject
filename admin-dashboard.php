@@ -89,6 +89,16 @@ require_once("header.php");
 				</div>
 			</div>
 		</div>
+		<div class="col">
+			<div class="card h-100">
+				<img src="images/questions.jpg" class="card-img-top" alt="...">
+				<div class="card-body">
+					<h1 class="card-title">View Categories of questions</h1>
+					<p class="card-text">View, add , update and delete question categories</p>
+					<a href="view-categories.php" class="btn btn-success">View categories</a>
+				</div>
+			</div>
+		</div>
 	</div>
 
 

@@ -76,6 +76,7 @@ $questionStatement->execute();
       <th scope="col">Question ID</th>
       <th scope="col">Question</th>
       <th scope="col">Date</th>
+      <th scope="col">Category</th>
       <th colspan="2">Asked by</th>
     </tr>
   </thead>
@@ -95,7 +96,16 @@ $questionStatement->execute();
 			$userId = $statementUser->fetch();
       ?>
 
+    
+  <?php 
+      $cid = $question['category_id'];
+      $queryCategory = "SELECT category FROM categories WHERE category_id = $cid ";
+      $statementCategory = $db->prepare($queryCategory);
+      $statementCategory->execute();
+      $category = $statementCategory->fetch();
+      ?>
 
+       <td><?= $category["category"] ?></td>
 
       <td><?= $userId["email"] ?></td>
       <td><a href="edit-question.php?question_id=<?= $question["question_id"]  ?>" >-edit</a></td>
@@ -123,6 +133,22 @@ $questionStatement->execute();
 			<label for="questionInput" class="form-label">Your question</label>
 			<textarea class="form-control" class="questionInput" name="questionInput" rows="3"></textarea>
 		</div>
+     <div class="mb-3">
+    <label for="inputState" class="form-label">Category</label>
+<select id="inputState" class="form-select" name= "category">
+    <?php 
+
+$query= "SELECT * FROM categories ";
+$Statement = $db->prepare($query);
+$Statement->execute();
+while ($category = $Statement->fetch()): ?>
+
+  
+      <option value="<?= $category['category_id'] ?>" ><?= $category['category'] ?></option> 
+  <?php endwhile; ?>
+    </select>
+  </div>
+
 		</div>
       <div class="modal-footer">
         <button type="submit" class="btn btn-primary" name="submitQuestionAdmin">Submit</button>

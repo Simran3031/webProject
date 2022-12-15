@@ -1,7 +1,6 @@
 <?php 
 require_once("connection.php");
 require_once("header.php");
-require_once("sub-header.php");
 
 /*
 $email = filter_input(INPUT_GET,'email',FILTER_SANITIZE_EMAIL);
@@ -17,10 +16,16 @@ $firstname = $user['firstname'];
 $_SESSION['name'] = $firstname;
 */
 
-$questions= "SELECT * FROM questions ORDER BY question_id DESC";
+$questions= "SELECT * FROM questions";
 $questionStatement = $db->prepare($questions);
 $questionStatement->execute();
 
+
+
+
+$query= "SELECT * FROM categories ";
+$Statement = $db->prepare($query);
+$Statement->execute();
 
 ?>
 
@@ -33,7 +38,7 @@ $questionStatement->execute();
 		.cardDiv
 		{
 			
-			width: 95%;
+			width: 98%;
 			margin: 0 auto;
 			margin-top: 2rem;
 		}
@@ -63,15 +68,54 @@ $questionStatement->execute();
 	</style>
 
 
+<nav class="navbar navbar-expand-lg dashboard-nav col-md-11">
+		<div class="container-fluid d-flex">
+
+			<p>Welcome <?php echo $_SESSION["email"];   ?></p>
+				
+		<form class="d-flex justify-content-end" role="search" id="search_form" onsubmit="myFunction()">
+        <input class="form-control me-2"  type="text" id ="input_category" name="input_category" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit" id="search" value="search" onclick ="validate(event); ">Search</button>
+      </form>
+			
+		</div>
+	</nav>
+
 	
 
 	<section id="questionBtnSection">
 		<button type="button" class="btn btn-success" id="questionBtn" data-bs-toggle="modal" data-bs-target="#questionModal">
 			Ask a question
 		</button>
-		<br>
+		
+		<button type="button" class="btn btn-success" id="sortBtn" onclick="sort();">
+			Show latest questions
+		</button>
 	</section>
-	<div class="cardDiv">
+
+
+<nav class="navbar navbar-expand-lg ">
+  <div class="container-fluid d-flex">
+   
+    <div class="collapse navbar-collapse" id="categoriesNav">
+      <ul class="navbar-nav  justify-content-end">
+      	<?php while ($categoryFetch = $Statement->fetch()): ?>
+
+  
+        <li class="nav-item">
+          <a class="nav-link" href="view-category-item.php?category_id=<?= $categoryFetch['category_id'] ?>"><?= $categoryFetch['category'] ?></a>
+        </li>
+  <?php endwhile; ?>
+
+
+       
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+	<div class="cardDiv" id="cardContainer">
 		<?php while ($question = $questionStatement->fetch()): ?>
 			
 			<div class="card text-bg-secondary mb-3" style="width: 43rem;">
@@ -144,6 +188,21 @@ $questionStatement->execute();
 			<label for="questionInput" class="form-label">Your question</label>
 			<textarea class="form-control" class="questionInput" name="questionInput" rows="3"></textarea>
 		</div>
+		 <div class="mb-3">
+    <label for="inputState" class="form-label">Category</label>
+<select id="inputState" class="form-select" name= "category">
+   <?php 
+
+$query= "SELECT * FROM categories ";
+$Statement = $db->prepare($query);
+$Statement->execute();
+while ($category = $Statement->fetch()): ?>
+
+  
+      <option value="<?= $category['category_id'] ?>" ><?= $category['category'] ?></option> 
+  <?php endwhile; ?>
+    </select>
+  </div>
 		</div>
       <div class="modal-footer">
         <button type="submit" class="btn btn-primary" name="submitQuestion">Submit</button>
@@ -153,6 +212,124 @@ $questionStatement->execute();
     </div>
   </div>
 </div>
+
+
+<script type="text/javascript">
+		function sort() {
+
+			document.getElementById("cardContainer").innerHTML = "";
+			 <?php
+			 $questions= "SELECT * FROM questions ORDER BY date_created DESC";
+$questionStatement = $db->prepare($questions);
+$questionStatement->execute();
+
+			  ?>
+
+			
+		}
+		
+
+		function validate(event)
+		{
+			
+			event.preventDefault();
+			const inputCategory = document.getElementById("input_category");
+			const searchTerm = inputCategory.value.trim();
+			if(searchTerm !== "")
+			{
+				fetchData(searchTerm);
+			}
+		}
+
+		function fetchData(searchTerm)
+		{
+			const apiUrl = 'https://data.winnipeg.ca/resource/4her-3th5.json?' +
+			`$where=service_area LIKE '%${searchTerm}%'` +
+			'&$order=service_area DESC' +
+			'&$limit=100';
+
+			fetch(encodeURI(apiUrl))
+			.then(function (result) {
+    			return result.json(); // Promise for parsed JSON.
+    		})
+			.then(function (data) {
+    			// Executed when promised JSON is ready.
+    			processSearchResults(data, searchTerm)
+    		});
+
+			function processSearchResults(data, searchTerm)
+			{
+
+				displayInformation(data, searchTerm);
+				displayMessage(data, searchTerm);
+			}
+
+		}
+
+		function displayMessage(data, searchTerm)
+		{
+			const notFoundMessage = document.getElementById("notFound");
+			const foundMessage = document.getElementById("found");
+
+			notFoundMessage.innerHTML = `There is no service named ${searchTerm}.`;
+			foundMessage.innerHTML = `Here are the services having ${searchTerm} in their name`;
+
+			if(data.length > 0)
+			{
+				notFoundMessage.style.display = "none";
+				foundMessage.style.display = "block";
+			}
+			else
+			{
+				notFoundMessage.style.display = "block";
+				foundMessage.style.display = "none";
+			}
+		}
+
+
+		function displayInformation(data,searchTerm)
+		{ 
+			
+           document.getElementById("serviceData").innerHTML = "";
+
+			const body = document.getElementsByTagName("body")[0];
+			const area = document.getElementById("serviceData");
+
+			for(let i = 0; i < data.length; i++)
+			{
+				
+				let section = document.createElement("section");
+				section.setAttribute('class', 'card');
+				let h2 = document.createElement("h2");
+				let ul = document.createElement("ul");
+				let keys = ["Service area", "Date", "Request", "Ward","Neighbourhood"];
+				let values = [];
+				values.push(data[i].service_area);
+				values.push(data[i].sr_date);
+				values.push(data[i].service_request);
+				values.push(data[i].ward);
+				values.push(data[i].neighbourhood);
+
+				area.appendChild(section);
+				section.appendChild(ul);
+
+				for (let j = 0; j < keys.length; j++)
+				{
+					let li = document.createElement("li");
+					let label = document.createElement("label");
+					let span = document.createElement("span");
+					label.innerHTML = `${keys[j]}:   `;
+					span.innerHTML = `${values[j]}`;
+
+					li.appendChild(label);
+					li.appendChild(span);
+					ul.appendChild(li);
+				}
+			}
+		}
+
+	</script>
+
 
 
 

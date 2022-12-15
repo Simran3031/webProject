@@ -13,7 +13,7 @@ $statement->execute();
 <style type="text/css">
     h1
     {
-        width: 21%;
+        width: 20%;
         margin: auto;
     }
     .card

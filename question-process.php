@@ -7,8 +7,9 @@ if((isset($_POST['submitQuestion']) || isset($_POST['submitQuestionAdmin']) ) &&
 	 // Sanitize user input to escape HTML entities and filter out dangerous characters.
 
    $question = filter_input(INPUT_POST, 'questionInput', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+   $category_id = $_POST['category'];
    $email = $_SESSION['email'];
-   echo $email;
+   //echo $email;
 
     // $query = "SELECT user_id FROM users WHERE email = :email"; # user_id
     // $statement = $db->prepare($query);
@@ -20,10 +21,11 @@ if((isset($_POST['submitQuestion']) || isset($_POST['submitQuestionAdmin']) ) &&
 
     $user_id = $_SESSION['user_id'];
 
-    $queryQuestion = "INSERT INTO questions(question,user_id) values(:question,:user_id)";
+    $queryQuestion = "INSERT INTO questions(question,user_id,category_id) values(:question,:user_id,:category_id)";
   	$statementQuestion = $db->prepare($queryQuestion);
   	$statementQuestion->bindValue(':question',$question);
     $statementQuestion->bindValue(':user_id',$user_id);
+    $statementQuestion->bindValue(':category_id',$category_id);
 
   	$statementQuestion->execute();
      
@@ -44,7 +46,7 @@ elseif(isset($_POST['submitQuestion']) || isset($_POST['submitQuestionAdmin']) )
 {
     if(!isset($_POST['questionInput']) || empty($_POST['questionInput']))
     {
-        echo '<script>alert("Please enter a quesyion");
+        echo '<script>alert("Please enter a question");
         window.location.href="questions.php";</script>';
         exit(0);
     }  
