@@ -1,6 +1,7 @@
  <?php 
 require_once("connection.php");
 
+
 $query= "SELECT * FROM comments ORDER BY comment_id DESC LIMIT 5";
 $statement = $db->prepare($query);
 $statement->execute();
@@ -117,14 +118,16 @@ h1
   </div>
 
   <div class="col-12">
-<label for="captcha"><?=  $_SESSION['captcha'] ?></label>
+
 
 
 <label for="captcha">Please Enter the Captcha Text</label>
-    <img src="captcha.php" alt="CAPTCHA" class="captcha-image "><p><a href='javascript: refreshCaptcha();'>click here</a>
-to refresh</p>
+    <img src="captcha.php" alt="CAPTCHA" class="captcha-image " >
     <br>
+    <BR>
     <input class="form-control"  type="text" id="captcha" name="captcha" >
+
+
 
 </div>
    
@@ -156,6 +159,7 @@ to refresh</p>
 
 	<!-- custom javascript file -->
 	<script type="text/javascript" src="js/script.js"></script>
+
 
 </body>
 </html>

@@ -2,23 +2,24 @@
 <?php
 
 require('connection.php');
+require_once ('captcha_verify.php');
 
-deb($_POST);
-deb($_SESSION,1);
+// deb($_POST);
+// deb($_SESSION,1);
 
-if ($_POST["captcha"] != $_SESSION["captcha"])  {
-        echo "<script>alert('Incorrect verification code');</script>" ;
-    } 
-	else{
-		echo "<script>alert('Verification code match !');</script>" ;
-	}
+// if ($_POST["captcha"] != $_SESSION["captcha"])  {
+//         echo "<script>alert('Incorrect verification code');</script>" ;
+//     } 
+// 	else{
+// 		echo "<script>alert('Verification code doe not match !');</script>" ;
+// 	}
 
- $captcha = trim(filter_input(INPUT_POST,'captcha',FILTER_SANITIZE_EMAIL));
+//  $captcha = trim(filter_input(INPUT_POST,'captcha',FILTER_SANITIZE_EMAIL));
 
-    if($captcha == $_SESSION['captcha'])
-    {
-        echo "aksjkhjnlbvldgkj dfpbvljdpoer;jvpodfljkbvoflrgvkjmrdlvjdsp";
-    }
+//     if($captcha == $_SESSION['captcha'])
+//     {
+//         echo "aksjkhjnlbvldgkj dfpbvljdpoer;jvpodfljkbvoflrgvkjmrdlvjdsp";
+//     }
 
 
 
@@ -29,6 +30,22 @@ if ($_POST["captcha"] != $_SESSION["captcha"])  {
 
 if((isset($_POST['post'])  && !empty($_POST['comment']) )) 
 {
+$verify_captcha = json_decode(verifyCaptcha($_POST['captcha']), true); 
+
+     if ($verify_captcha['captcha_status'] == 200) {
+         //If captcha verification is Successful
+         echo '<script>   
+
+            document.addEventListener(\'DOMContentLoaded\', (event) => {
+            alert("'.$verify_captcha['captcha_message'].'");
+            })
+
+            
+            </script>';
+
+            $bit = 1;
+
+
 	 // Sanitize user input to escape HTML entities and filter out dangerous characters.
 
  $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -50,6 +67,21 @@ else
     $statement->bindValue(':user',$user);
 
     $statement->execute();
+
+         } else {
+        //If Unsuccessful
+        echo '<script>   
+             document.addEventListener(\'DOMContentLoaded\', (event) => {
+        alert("'.$verify_captcha['captcha_message'].'");
+        })
+        documen.getElementById("messagePara").innerHTML = "";
+        </script>';
+         $bit = 0;
+        }
+
+
+
+
    
      
 
@@ -60,7 +92,7 @@ else
 
 else
 {
-    echo '<script>alert("Please enetr a comment")';
+    echo '<script>alert("Please enter a comment")';
     exit(0);
 }
 
@@ -86,8 +118,11 @@ margin: auto;
 
 
 <div id="message">
-	<p> Thank you for yor feedback!! We love to hear from you!</p>
-
+	<?php if($bit == 1): ?>
+	<p >Thank you for your Feedback! We would love to hear back from you! </p>
+<?php else: ?>
+<p >Please re-enter captcha </p>
+<?php endif; ?>
 </div>
 
 <div class="row row-cols-1 row-cols-md-3 g-4">
