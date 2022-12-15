@@ -4,6 +4,7 @@ session_start();
  
     $text = rand(10000,99999); 
     //echo $text;
+// $text and $_SESSION['captcha'] do not match ,Hence captcha functionality not working
 
     $_SESSION['captcha'] = $text; 
     //echo $_SESSION['vercode'];
