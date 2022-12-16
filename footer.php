@@ -1,7 +1,7 @@
  <?php 
 require_once("connection.php");
 
-
+//Select top 5 comments
 $query= "SELECT * FROM comments ORDER BY comment_id DESC LIMIT 5";
 $statement = $db->prepare($query);
 $statement->execute();
