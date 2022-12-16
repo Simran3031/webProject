@@ -1,6 +1,7 @@
 <?php 
-
+//username
   define('ADMIN_LOGIN','simran'); 
+//password
   define('ADMIN_PASSWORD','mypass'); 
 
   if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW']) 
