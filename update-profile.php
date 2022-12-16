@@ -1,7 +1,7 @@
 <?php 
 require_once("connection.php");
 require_once("header.php");
-
+//Image is optional
 	$user_id = $_SESSION["user_id"];
 	$query = "SELECT * FROM users WHERE user_id = :user_id "; 
     $statement = $db->prepare($query);
