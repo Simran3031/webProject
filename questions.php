@@ -17,8 +17,6 @@ $_SESSION['name'] = $firstname;
 */
 
 $questions= "SELECT * FROM questions";
-$questionStatement = $db->prepare($questions);
-$questionStatement->execute();
 
 
 
@@ -26,6 +24,15 @@ $questionStatement->execute();
 $query= "SELECT * FROM categories ";
 $Statement = $db->prepare($query);
 $Statement->execute();
+
+if(isset($_GET['sortBtn']))
+{
+    $questions = "SELECT * FROM questions ORDER BY date_created DESC";
+}
+$questionStatement = $db->prepare($questions);
+$questionStatement->execute();
+
+
 
 ?>
 
@@ -88,9 +95,9 @@ $Statement->execute();
 			Ask a question
 		</button>
 		
-		<button type="button" class="btn btn-success" id="sortBtn" onclick="sort();">
+	<!-- 	<button type="button" class="btn btn-success" id="sortBtn" name="sortBtn">
 			Show latest questions
-		</button>
+		</button> -->
 	</section>
 
 
