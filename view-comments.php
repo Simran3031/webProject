@@ -2,7 +2,7 @@
 require_once("connection.php");
 require_once("header.php");
 
-
+//Latest first
 $query= "SELECT * FROM comments ORDER BY comment_id DESC";
 $Statement = $db->prepare($query);
 $Statement->execute();
