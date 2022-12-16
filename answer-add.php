@@ -15,6 +15,7 @@ if((isset($_POST['answer']) || isset($_POST['submitAnswerAdmin'])) && !empty($_P
     $statement->bindValue(':user_id',$user_id); 
     $statement->execute();
 
+   //If answer exsists
     if(isset($_POST['answer']))
     {
            header("Location: questions.php");
